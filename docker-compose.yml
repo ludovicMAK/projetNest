@@ -1,4 +1,4 @@
-version: "4.1"
+
 services:
   postgres:
     image: postgres:latest
@@ -19,3 +19,38 @@ services:
       - "80:80"
     depends_on:
       - postgres
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev 
+    container_name: nestjs_api
+    ports:
+      - "3000:3000"
+      - "9229:9229" 
+    volumes:
+      - /usr/src/app/node_modules
+    environment:
+      - DATABASE_HOST=postgres 
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${POSTGRES_USER:-postgres}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DATABASE_NAME=${POSTGRES_DB:-lane}
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /usr/src/app/src
+
+        - action: sync+restart
+          path: package.json
+          target: /usr/src/app/package.json
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+
+
+
+
+
+  

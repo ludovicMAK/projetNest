@@ -7,27 +7,27 @@ import { UpdatePlayerDto } from './dto/update-player.dto';
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @Post()
+  @Post('/test/test/34')
   create(@Body() createPlayerDto: CreatePlayerDto) {
     return this.playerService.create(createPlayerDto);
   }
 
-  @Get()
+  @Get('/test/test')
   findAll() {
     return this.playerService.findAll();
   }
 
-  @Get(':id')
+  @Get('/test/:id')
   findOne(@Param('id') id: string) {
     return this.playerService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('/test/:id')
   update(@Param('id') id: string, @Body() updatePlayerDto: UpdatePlayerDto) {
     return this.playerService.update(+id, updatePlayerDto);
   }
 
-  @Delete(':id')
+  @Delete('/test/:id')
   remove(@Param('id') id: string) {
     return this.playerService.remove(+id);
   }
