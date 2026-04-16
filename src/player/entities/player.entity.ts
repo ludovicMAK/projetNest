@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Tournament } from '../../tournament/entities/tournament.entity';
 
 @Entity('players')
 export class Player {
@@ -19,4 +20,7 @@ export class Player {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @ManyToMany(() => Tournament, (tournament) => tournament.players)
+  tournaments!: Tournament[];
 }
