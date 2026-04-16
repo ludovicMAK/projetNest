@@ -1,4 +1,3 @@
-// @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
@@ -6,7 +5,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['eslint.config.mjs', 'dist/**', 'node_modules/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -26,10 +25,30 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
+      // TypeScript
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      '@typescript-eslint/no-unused-vars': ['warn', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      }],
+      '@typescript-eslint/consistent-type-imports': ['warn', {
+        prefer: 'type-imports',
+      }],
+
+      // Prettier
+      'prettier/prettier': ['error', {
+        endOfLine: 'lf',
+        singleQuote: true,
+        trailingComma: 'all',
+        semi: true,
+        printWidth: 100,
+      }],
+
+      // Bonnes pratiques générales
+      'no-console': 'warn',                               // utilise un logger Nest plutôt que console.log
+      'no-return-await': 'error',                         // return await inutile dans une async function
     },
   },
 );

@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Player } from './entities/player.entity';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 
 @Injectable()
 export class PlayerService {
-  create(createPlayerDto: CreatePlayerDto) {
-    return 'This action adds a new player';
+  constructor(
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Player>,
+  ) {}
+
+  async findAll(): Promise<Player[]> {
+    return this.playerRepository.find({
+      select: ['id', 'username', 'email', 'avatar', 'createdAt'],
+    });
   }
 
-  findAll() {
-    return `This action returns all player`;
+  async findOne(id: string): Promise<Player> {
+    const player = await this.playerRepository.findOne({
+      where: { id },
+      select: ['id', 'username', 'email', 'avatar', 'createdAt'],
+    });
+    if (!player) {
+      throw new NotFoundException(`Joueur ${id} introuvable`);
+    }
+    return player;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} player`;
+  async findTournaments(id: string) {
+    const player = await this.playerRepository.findOne({
+      where: { id },
+      relations: ['tournaments'],
+    });
+    if (!player) {
+      throw new NotFoundException(`Joueur ${id} introuvable`);
+    }
+    return player;
   }
 
-  update(id: number, updatePlayerDto: UpdatePlayerDto) {
-    return `This action updates a #${id} player`;
+  // Utilisé par AuthModule pour l'inscription
+  async create(createPlayerDto: CreatePlayerDto): Promise<Player> {
+    const player = this.playerRepository.create(createPlayerDto);
+    return this.playerRepository.save(player);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} player`;
+  async findByEmail(email: string): Promise<Player | null> {
+    return this.playerRepository.findOne({ where: { email } });
   }
 }
