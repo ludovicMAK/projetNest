@@ -40,7 +40,6 @@ export class PlayerService {
     return player;
   }
 
-  // Utilisé par AuthModule pour l'inscription
   async create(createPlayerDto: CreatePlayerDto): Promise<Player> {
     const player = this.playerRepository.create(createPlayerDto);
     return this.playerRepository.save(player);
@@ -48,5 +47,8 @@ export class PlayerService {
 
   async findByEmail(email: string): Promise<Player | null> {
     return this.playerRepository.findOne({ where: { email } });
+  }
+  async findOneByUsernameAndPassword(username: string, passwords:string): Promise<Player | null> {
+    return this.playerRepository.findOne({ where: { username, password: passwords } });
   }
 }

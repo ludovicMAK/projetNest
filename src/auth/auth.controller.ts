@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { CreatePlayerDto } from '../player/dto/create-player.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -11,13 +12,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    return this.authService.login(req.user);
+    return this.authService.login(req.body.username, req.body.password);
   }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Public()
+  @Post('register')
+  async register(@Body() dto: CreatePlayerDto) {
+    return this.authService.register(dto);
   }
 
 }

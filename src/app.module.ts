@@ -5,16 +5,17 @@ import { Player } from './player/entities/player.entity';
 import { Tournament } from './tournament/entities/tournament.entity';
 import { TournamentModule } from './tournament/tournament.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { LocalStrategy } from './auth/local.strategy';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
-    PlayerModule,
     AuthModule,
-    UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST || 'postgres',
@@ -29,6 +30,9 @@ import { AppService } from './app.service';
     TournamentModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService],
+  providers: [AppService, LocalStrategy, JwtStrategy,{
+      provide: 'APP_GUARD',
+      useClass: JwtAuthGuard,
+    }],
 })
 export class AppModule {}
