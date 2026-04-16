@@ -1,26 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PlayerModule } from './player/player.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PlayerModule } from './player/player.module';
+import { Player } from './player/entities/player.entity';
 
-@Module({
-  imports: [PlayerModule],
-  controllers: [AppController],
-  providers: [AppService],
-})
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.POSTGRES_USER || 'root',
-      password: process.env.POSTGRES_PASSWORD || 'root',
-      database: process.env.POSTGRES_DB || 'lane',
-      entities: [],
+      host: process.env.DATABASE_HOST || 'postgres',
+      port: parseInt(process.env.DATABASE_PORT ?? '5432'),
+      username: process.env.DATABASE_USER || 'root',
+      password: process.env.DATABASE_PASSWORD || 'root',
+      database: process.env.DATABASE_NAME || 'lane',
+      entities: [Player],
       synchronize: true,
     }),
+    PlayerModule,
   ],
 })
 export class AppModule {}
