@@ -1,8 +1,8 @@
-
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PlayerService } from '../player/player.service';
 import { CreatePlayerDto } from '../player/dto/create-player.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,26 +12,53 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.PlayerService.findOneByUsernameAndPassword(username, pass);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+    const user = await this.PlayerService.findOneByUsername(username);
+    if (user) {
+      const passwordMatch = await bcrypt.compare(pass, user.password);
+      if (passwordMatch) {
+        const { password, ...result } = user;
+        return result;
+      }
     }
     return null;
   }
 
   async login(username: string, password: string) {
-    const player = await this.validateUser(username, password);
+    const player = await this.PlayerService.findOneByUsername(username);
+
     if (!player) {
-      return null;
+      throw new UnauthorizedException('Identifiants invalides');
     }
-    const payload = { username: player.username, sub: player.id };
+
+    const isPasswordValid = await bcrypt.compare(password, player.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Identifiants invalides');
+    }
+
+    const payload = { sub: player.id, username: player.username };
+    const access_token = this.jwtService.sign(payload);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
+      player: {
+        id: player.id,
+        username: player.username,
+        email: player.email,
+        avatar: player.avatar,
+        createdAt: player.createdAt
+      }
     };
   }
-  async register(player: CreatePlayerDto) {
-    const createdUser = await this.PlayerService.create(player);
+
+  async register(createPlayerDto: CreatePlayerDto) {
+    const hashedPassword = await bcrypt.hash(createPlayerDto.password, 10);
+    
+    const playerToCreate = {
+      ...createPlayerDto,
+      password: hashedPassword
+    };
+
+    const createdUser = await this.PlayerService.create(playerToCreate);
     if (!createdUser) {
       return null;
     }
@@ -43,6 +70,5 @@ export class AuthService {
         "email": createdUser.email
       }
     };
-
   }
 }

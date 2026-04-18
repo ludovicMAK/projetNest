@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from './entities/player.entity';
@@ -41,6 +41,24 @@ export class PlayerService {
   }
 
   async create(createPlayerDto: CreatePlayerDto): Promise<Player> {
+    const { username, email } = createPlayerDto;
+
+    const existingUsername = await this.playerRepository.findOne({
+      where: { username },
+    });
+
+    if (existingUsername) {
+      throw new ConflictException('Ce nom d\'utilisateur existe déjà');
+    }
+
+    const existingEmail = await this.playerRepository.findOne({
+      where: { email },
+    });
+
+    if (existingEmail) {
+      throw new ConflictException('Cet email existe déjà');
+    }
+
     const player = this.playerRepository.create(createPlayerDto);
     return this.playerRepository.save(player);
   }
@@ -48,7 +66,9 @@ export class PlayerService {
   async findByEmail(email: string): Promise<Player | null> {
     return this.playerRepository.findOne({ where: { email } });
   }
-  async findOneByUsernameAndPassword(username: string, passwords:string): Promise<Player | null> {
-    return this.playerRepository.findOne({ where: { username, password: passwords } });
+  async findOneByUsername(username: string): Promise<Player | null> {
+    
+    return this.playerRepository.findOne({ where: { username } });
   }
+  
 }
