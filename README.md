@@ -1,10 +1,11 @@
-# Tournament API
+# Gestionnaire de Tournois de Jeux Vidéo
 
-API REST de gestion de tournois de jeux vidéo, développée avec NestJS, TypeORM et PostgreSQL.
+API REST permettant de gérer des tournois de jeux vidéo : création de tournois, inscription des joueurs, gestion des matchs et suivi des résultats.
 
 ## Prérequis
 
-- [Docker](https://www.docker.com/) et Docker Compose
+- [Docker](https://docs.docker.com/get-docker/) >= 24
+- [Docker Compose](https://docs.docker.com/compose/) >= 2
 
 ## Installation
 
@@ -57,6 +58,37 @@ docker compose down
 ```bash
 docker compose logs -f api
 ```
+
+## Tests
+
+### Tests unitaires
+
+```bash
+docker compose exec api npm run test
+```
+
+### Tests avec couverture
+
+```bash
+docker compose exec api npm run test:cov
+```
+
+### Tests end-to-end (e2e)
+
+Les tests e2e utilisent une base PostgreSQL isolée lancée via Docker (port 5433, séparée de la base de dev).
+
+**Prérequis :** Docker doit être en cours d'exécution.
+
+```bash
+docker compose exec api npm run test:e2e
+```
+
+Cette commande :
+1. Lance un container PostgreSQL de test et attend qu'il soit prêt
+2. Exécute tous les tests d'intégration de manière séquentielle
+3. Arrête le container une fois les tests terminés
+
+---
 
 ## Routes HTTP
 
@@ -128,7 +160,7 @@ POST /tournaments
 ```
 
 **Filtrer par statut :**
-```
+```http
 GET /tournaments?status=pending
 GET /tournaments?status=in_progress
 GET /tournaments?status=completed
@@ -198,15 +230,17 @@ POST /games
 
 Un utilisateur peut être promu admin via `PATCH /players/:id/promote` (réservé aux admins).
 
-## Tests
+---
 
-```bash
-# Tests unitaires
-docker compose exec api npm run test
+## Format des réponses
 
-# Tests avec couverture
-docker compose exec api npm run test:cov
+Toutes les réponses sont enveloppées dans un objet commun :
 
-# Tests e2e
-docker compose exec api npm run test:e2e
+```json
+{
+  "data": { ... },
+  "timestamp": "2026-01-01T00:00:00.000Z"
+}
 ```
+
+Les erreurs retournent un code HTTP approprié (400, 401, 403, 404) avec un message descriptif.
