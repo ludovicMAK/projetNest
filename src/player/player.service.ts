@@ -12,16 +12,11 @@ export class PlayerService {
   ) {}
 
   async findAll(): Promise<Player[]> {
-    return this.playerRepository.find({
-      select: ['id', 'username', 'email', 'avatar', 'createdAt'],
-    });
+    return this.playerRepository.find();
   }
 
   async findOne(id: string): Promise<Player> {
-    const player = await this.playerRepository.findOne({
-      where: { id },
-      select: ['id', 'username', 'email', 'avatar', 'createdAt'],
-    });
+    const player = await this.playerRepository.findOne({ where: { id } });
     if (!player) {
       throw new NotFoundException(`Joueur ${id} introuvable`);
     }
@@ -59,6 +54,15 @@ export class PlayerService {
     }
 
     const player = this.playerRepository.create(createPlayerDto);
+    return this.playerRepository.save(player);
+  }
+
+  async promote(id: string): Promise<Player> {
+    const player = await this.playerRepository.findOne({ where: { id } });
+    if (!player) {
+      throw new NotFoundException(`Joueur ${id} introuvable`);
+    }
+    player.role = 'admin';
     return this.playerRepository.save(player);
   }
 

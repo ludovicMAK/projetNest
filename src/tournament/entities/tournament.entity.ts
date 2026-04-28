@@ -1,12 +1,16 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Player } from '../../player/entities/player.entity';
+import { Game } from '../../game/entities/game.entity';
 
 @Entity('tournaments')
 export class Tournament {
@@ -16,8 +20,13 @@ export class Tournament {
   @Column()
   name!: string;
 
-  @Column()
-  game!: string;
+  @ManyToOne(() => Game, { eager: true })
+  @JoinColumn({ name: 'gameId' })
+  game!: Game;
+
+  @Column({ type: 'varchar' })
+  @Exclude()
+  gameId!: string;
 
   @Column()
   maxPlayers!: number;

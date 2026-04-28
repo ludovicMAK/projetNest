@@ -38,19 +38,10 @@ export class AuthService {
       throw new UnauthorizedException('Identifiants invalides');
     }
 
-    const payload = { sub: player.id, username: player.username };
+    const payload = { sub: player.id, username: player.username, role: player.role };
     const access_token = this.jwtService.sign(payload);
 
-    return {
-      access_token,
-      player: {
-        id: player.id,
-        username: player.username,
-        email: player.email,
-        avatar: player.avatar,
-        createdAt: player.createdAt,
-      },
-    };
+    return { access_token, player };
   }
 
   async register(createPlayerDto: CreatePlayerDto) {
@@ -65,13 +56,6 @@ export class AuthService {
     if (!createdUser) {
       return null;
     }
-    return {
-      message: 'Utilisateur créé avec succès',
-      user: {
-        id: createdUser.id,
-        username: createdUser.username,
-        email: createdUser.email,
-      },
-    };
+    return { message: 'Utilisateur créé avec succès', user: createdUser };
   }
 }
