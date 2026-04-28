@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs', 'dist/**', 'node_modules/**'],
+    ignores: ['eslint.config.mjs', 'dist/**', 'node_modules/**', 'test/jest.setup.js'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -25,7 +25,6 @@ export default tseslint.config(
   },
   {
     rules: {
-      // TypeScript
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'warn',
@@ -37,7 +36,6 @@ export default tseslint.config(
         prefer: 'type-imports',
       }],
 
-      // Prettier
       'prettier/prettier': ['error', {
         endOfLine: 'lf',
         singleQuote: true,
@@ -46,9 +44,8 @@ export default tseslint.config(
         printWidth: 100,
       }],
 
-      // Bonnes pratiques générales
-      'no-console': 'warn',                               // utilise un logger Nest plutôt que console.log
-      'no-return-await': 'error',                         // return await inutile dans une async function
+      'no-console': 'warn',
+      'no-return-await': 'error',
     },
   },
 );
