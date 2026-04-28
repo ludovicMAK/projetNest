@@ -4,13 +4,14 @@ import { PlayerModule } from './player/player.module';
 import { Player } from './player/entities/player.entity';
 import { Tournament } from './tournament/entities/tournament.entity';
 import { TournamentModule } from './tournament/tournament.module';
+import { Match } from './match/entities/match.entity';
+import { MatchModule } from './match/match.module';
+import { Game } from './game/entities/game.entity';
+import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
-import { AuthController } from './auth/auth.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { LocalStrategy } from './auth/local.strategy';
-import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -22,17 +23,17 @@ import { JwtStrategy } from './auth/jwt.strategy';
       username: process.env.DATABASE_USER || 'root',
       password: process.env.DATABASE_PASSWORD || 'root',
       database: process.env.DATABASE_NAME || 'lane',
-      entities: [Player, Tournament],
+      entities: [Player, Tournament, Match, Game],
       synchronize: true,
     }),
     PlayerModule,
     TournamentModule,
+    MatchModule,
+    GameModule,
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController],
   providers: [
     AppService,
-    LocalStrategy,
-    JwtStrategy,
     {
       provide: 'APP_GUARD',
       useClass: JwtAuthGuard,

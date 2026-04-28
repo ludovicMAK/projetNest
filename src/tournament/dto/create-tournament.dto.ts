@@ -5,6 +5,7 @@ import {
   IsDateString,
   IsOptional,
   IsEnum,
+  IsUUID,
   Min,
 } from 'class-validator';
 
@@ -13,9 +14,8 @@ export class CreateTournamentDto {
   @IsNotEmpty()
   name!: string;
 
-  @IsString()
-  @IsNotEmpty()
-  game!: string;
+  @IsUUID()
+  gameId!: string;
 
   @IsNumber()
   @Min(2)

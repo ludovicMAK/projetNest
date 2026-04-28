@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { PlayerService } from './player.service';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @Controller('players')
 export class PlayerController {
@@ -18,5 +19,11 @@ export class PlayerController {
   @Get(':id/tournaments')
   findTournaments(@Param('id') id: string) {
     return this.playerService.findTournaments(id);
+  }
+
+  @UseGuards(AdminGuard)
+  @Patch(':id/promote')
+  promote(@Param('id') id: string) {
+    return this.playerService.promote(id);
   }
 }

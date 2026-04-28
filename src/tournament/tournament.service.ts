@@ -1,4 +1,3 @@
-// src/tournament/tournament.service.ts
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,6 +5,8 @@ import { Tournament } from './entities/tournament.entity';
 import { Player } from '../player/entities/player.entity';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { MatchService } from '../match/match.service';
+import { Match } from '../match/entities/match.entity';
 
 @Injectable()
 export class TournamentService {
@@ -15,6 +16,8 @@ export class TournamentService {
 
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
+
+    private readonly matchService: MatchService,
   ) {}
 
   async findAll(status?: string): Promise<Tournament[]> {
@@ -50,13 +53,38 @@ export class TournamentService {
 
   async update(id: string, dto: UpdateTournamentDto): Promise<Tournament> {
     const tournament = await this.findOne(id);
-    Object.assign(tournament, dto);
+    Object.assign(tournament, {
+      ...dto,
+      ...(dto.startDate ? { startDate: new Date(dto.startDate) } : {}),
+    });
     return this.tournamentRepository.save(tournament);
   }
 
   async remove(id: string): Promise<void> {
     const tournament = await this.findOne(id);
     await this.tournamentRepository.remove(tournament);
+  }
+
+  getMatches(tournamentId: string): Promise<Match[]> {
+    return this.matchService.findByTournament(tournamentId);
+  }
+
+  async start(id: string): Promise<{ tournament: Tournament; matches: Match[] }> {
+    const tournament = await this.findOne(id);
+
+    if (tournament.status !== 'pending') {
+      throw new BadRequestException('Le tournoi est déjà commencé ou terminé');
+    }
+
+    if (tournament.players.length < 2) {
+      throw new BadRequestException('Il faut au minimum 2 joueurs pour démarrer le tournoi');
+    }
+
+    tournament.status = 'in_progress';
+    await this.tournamentRepository.save(tournament);
+
+    const matches = await this.matchService.createRound1Matches(id, tournament.players);
+    return { tournament, matches };
   }
 
   async join(tournamentId: string, playerId: string): Promise<Tournament> {
