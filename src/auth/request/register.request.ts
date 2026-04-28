@@ -1,9 +1,9 @@
-import { IsEmail, IsString, IsUrl, MinLength } from "class-validator";
+import { IsEmail, IsString, IsUrl, MinLength } from 'class-validator';
 
 export class CreatePlayerRequest {
   @IsString()
   username!: string;
-    
+
   @IsEmail({}, { message: 'Email invalide' })
   email!: string;
 

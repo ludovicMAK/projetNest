@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
@@ -30,9 +29,14 @@ import { JwtStrategy } from './auth/jwt.strategy';
     TournamentModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, LocalStrategy, JwtStrategy,{
+  providers: [
+    AppService,
+    LocalStrategy,
+    JwtStrategy,
+    {
       provide: 'APP_GUARD',
       useClass: JwtAuthGuard,
-    }],
+    },
+  ],
 })
 export class AppModule {}

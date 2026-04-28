@@ -20,8 +20,8 @@ export class TournamentService {
   async findAll(status?: string): Promise<Tournament[]> {
     if (status) {
       return this.tournamentRepository.find({
-        where: { status: status as any },
-        relations: ['players'], // ← charge les joueurs avec le tournoi
+        where: { status: status as Tournament['status'] },
+        relations: ['players'],
       });
     }
     return this.tournamentRepository.find({

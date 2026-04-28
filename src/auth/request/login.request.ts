@@ -1,10 +1,9 @@
-import {  IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class LoginPlayerRequest {
   @IsString()
-    username!: string;
-    
-  @IsString()
-    password!: string;
+  username!: string;
 
+  @IsString()
+  password!: string;
 }

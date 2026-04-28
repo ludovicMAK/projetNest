@@ -2,21 +2,24 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PlayerService } from '../player/player.service';
 import { CreatePlayerDto } from '../player/dto/create-player.dto';
+import { Player } from '../player/entities/player.entity';
 import * as bcrypt from 'bcrypt';
+
+export type AuthenticatedPlayer = Omit<Player, 'password'>;
 
 @Injectable()
 export class AuthService {
   constructor(
     private PlayerService: PlayerService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
+  async validateUser(username: string, pass: string): Promise<AuthenticatedPlayer | null> {
     const user = await this.PlayerService.findOneByUsername(username);
     if (user) {
       const passwordMatch = await bcrypt.compare(pass, user.password);
       if (passwordMatch) {
-        const { password, ...result } = user;
+        const { password: _password, ...result } = user;
         return result;
       }
     }
@@ -45,17 +48,17 @@ export class AuthService {
         username: player.username,
         email: player.email,
         avatar: player.avatar,
-        createdAt: player.createdAt
-      }
+        createdAt: player.createdAt,
+      },
     };
   }
 
   async register(createPlayerDto: CreatePlayerDto) {
     const hashedPassword = await bcrypt.hash(createPlayerDto.password, 10);
-    
+
     const playerToCreate = {
       ...createPlayerDto,
-      password: hashedPassword
+      password: hashedPassword,
     };
 
     const createdUser = await this.PlayerService.create(playerToCreate);
@@ -63,12 +66,12 @@ export class AuthService {
       return null;
     }
     return {
-      "message": "Utilisateur créé avec succès",
-      "user": {
-        "id": createdUser.id,
-        "username": createdUser.username,
-        "email": createdUser.email
-      }
+      message: 'Utilisateur créé avec succès',
+      user: {
+        id: createdUser.id,
+        username: createdUser.username,
+        email: createdUser.email,
+      },
     };
   }
 }

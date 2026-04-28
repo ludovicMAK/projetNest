@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from './entities/player.entity';
 import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
 
 @Injectable()
 export class PlayerService {
@@ -48,7 +47,7 @@ export class PlayerService {
     });
 
     if (existingUsername) {
-      throw new ConflictException('Ce nom d\'utilisateur existe déjà');
+      throw new ConflictException("Ce nom d'utilisateur existe déjà");
     }
 
     const existingEmail = await this.playerRepository.findOne({
@@ -67,8 +66,6 @@ export class PlayerService {
     return this.playerRepository.findOne({ where: { email } });
   }
   async findOneByUsername(username: string): Promise<Player | null> {
-    
     return this.playerRepository.findOne({ where: { username } });
   }
-  
 }
