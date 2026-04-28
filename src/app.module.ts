@@ -8,10 +8,11 @@ import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { GamesModule } from './games/games.module';
+import { Game } from './games/entities/game.entity';
 
 @Module({
   imports: [
@@ -23,11 +24,12 @@ import { JwtStrategy } from './auth/jwt.strategy';
       username: process.env.DATABASE_USER || 'root',
       password: process.env.DATABASE_PASSWORD || 'root',
       database: process.env.DATABASE_NAME || 'lane',
-      entities: [Player, Tournament],
+      entities: [Player, Tournament, Game],
       synchronize: true,
     }),
     PlayerModule,
     TournamentModule,
+    GamesModule
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, LocalStrategy, JwtStrategy,{
