@@ -4,7 +4,6 @@ import { PlayerModule } from './player/player.module';
 import { Player } from './player/entities/player.entity';
 import { Tournament } from './tournament/entities/tournament.entity';
 import { TournamentModule } from './tournament/tournament.module';
-import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +12,7 @@ import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { GamesModule } from './games/games.module';
 import { Game } from './games/entities/game.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [

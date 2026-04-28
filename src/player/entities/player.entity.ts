@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserRole } from '../enums/user-role.enum';
 import { Tournament } from '../../tournament/entities/tournament.entity';
 
 @Entity('players')
@@ -21,6 +22,10 @@ export class Player {
   @CreateDateColumn()
   createdAt!: Date;
 
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.PLAYER })
+  role!: UserRole;
+
   @ManyToMany(() => Tournament, (tournament) => tournament.players)
   tournaments!: Tournament[];
 }
+
