@@ -20,13 +20,13 @@ export class Tournament {
   @Column()
   name!: string;
 
-  @ManyToOne(() => Game, { eager: true })
+  @ManyToOne(() => Game, { eager: true, nullable: true })
   @JoinColumn({ name: 'gameId' })
-  game!: Game;
+  game!: Game | null;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   @Exclude()
-  gameId!: string;
+  gameId!: string | null;
 
   @Column()
   maxPlayers!: number;
