@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { AdminOnly } from '../auth/decorators/admin-only.decorator';
 
 @ApiTags('games')
 @Controller('games')
@@ -18,7 +18,7 @@ export class GameController {
     return this.gameService.findAll();
   }
 
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @Post()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Ajouter un jeu (admin)' })

@@ -1,21 +1,10 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  UseGuards,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpCode } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TournamentService } from './tournament.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { JoinTournamentDto } from './dto/join-tournament.dto';
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { AdminOnly } from '../auth/decorators/admin-only.decorator';
 
 @ApiTags('tournaments')
 @ApiBearerAuth()
@@ -39,7 +28,7 @@ export class TournamentController {
     return this.tournamentService.findOne(id);
   }
 
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @Post()
   @ApiOperation({ summary: 'Créer un tournoi (admin)' })
   @ApiResponse({ status: 201, description: 'Tournoi créé' })
@@ -49,7 +38,7 @@ export class TournamentController {
     return this.tournamentService.create(dto);
   }
 
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @Put(':id')
   @ApiOperation({ summary: 'Modifier un tournoi (admin)' })
   @ApiResponse({ status: 200, description: 'Tournoi mis à jour' })
@@ -59,7 +48,7 @@ export class TournamentController {
     return this.tournamentService.update(id, dto);
   }
 
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @HttpCode(204)
   @Delete(':id')
   @ApiOperation({ summary: 'Supprimer un tournoi (admin)' })
@@ -79,7 +68,7 @@ export class TournamentController {
     return this.tournamentService.join(tournamentId, dto.playerId);
   }
 
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @Post(':id/start')
   @ApiOperation({ summary: 'Démarrer un tournoi et générer les matchs (admin)' })
   @ApiResponse({ status: 201, description: 'Tournoi démarré, matchs générés' })

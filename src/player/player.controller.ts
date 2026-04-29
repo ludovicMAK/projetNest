@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from './player.service';
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { AdminOnly } from '../auth/decorators/admin-only.decorator';
 
 @ApiTags('players')
 @ApiBearerAuth()
@@ -32,7 +32,7 @@ export class PlayerController {
     return this.playerService.findTournaments(id);
   }
 
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @Patch(':id/promote')
   @ApiOperation({ summary: 'Promouvoir un joueur en admin' })
   @ApiResponse({ status: 200, description: 'Joueur promu admin' })
